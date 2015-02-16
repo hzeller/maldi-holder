@@ -1,11 +1,11 @@
 epsilon=0.05;
 
 clearance=0.3;
-plate_height=125.5;
-plate_width=84;
-plate_width_inner=77.2;
+plate_height=127;
+plate_width=85;
+plate_width_inner=77.6;
 plate_thick=2;
-plate_edge_thick=1;
+plate_edge_thick=1.5;
 
 finger_thick=20;
 case_extra_height=5;
@@ -45,14 +45,21 @@ module base_block(extra_x=0,extra_y=0,extra_z=0) {
 
 // Base block with the dovetail cut.
 module base_dovetail() {
-    difference() {
-	base_block();
+    intersection() {
+	union() {
+	    difference() {
+		base_block();
 
-	// substract some wedges.
-	translate([(plate_width + case_extra_width + 7)/2, 0, 0]) rotate([0,25,0])  cube([10, plate_height + case_extra_height+ 5, 20], center=true);
+		// substract some wedges.
+		translate([(plate_width + case_extra_width + 7)/2, 0, 0]) rotate([0,25,0])  cube([10, plate_height + case_extra_height+ 5, 20], center=true);
 	
-	translate([-(plate_width + case_extra_width + 7)/2, 0, 0]) rotate([0,-25,0])  cube([10, plate_height+ case_extra_height+ 5, 20], center=true);
+		translate([-(plate_width + case_extra_width + 7)/2, 0, 0]) rotate([0,-25,0])  cube([10, plate_height+ case_extra_height+ 5, 20], center=true);
 
+	    }
+	    
+	    translate([-100,(plate_height+case_extra_height+finger_thick-epsilon)/2,case_thick/2]) rotate([0,90,0]) cylinder(r=finger_thick/2,h=200,$fn=60);
+	}
+	translate([0,-cover_extra_thick/2-epsilon,0]) base_block(extra_y=cover_extra_thick+15,extra_x=cover_extra_wide,extra_z=cover_extra_thick);
     }
 }
 
@@ -96,10 +103,14 @@ module case() {
     }
 }
 
+module outer_cover() {
+    translate([0,-cover_extra_thick/2-epsilon,0]) base_block(extra_y=cover_extra_thick,extra_x=cover_extra_wide,extra_z=cover_extra_thick);
+}
+
 module cover() {
     difference() {
 	//translate([0,-cover_extra_thick/2-epsilon,(case_thick + cover_extra_thick)/2]) cube([plate_width + case_extra_width + cover_extra_wide, plate_height + case_extra_height + cover_extra_thick, case_thick + cover_extra_thick], center=true);
-	translate([0,-cover_extra_thick/2-epsilon,0]) base_block(extra_y=cover_extra_thick,extra_x=cover_extra_wide,extra_z=cover_extra_thick);
+	outer_cover();
 	
 	minkowski() {
 	    base_dovetail();
@@ -134,6 +145,8 @@ module xray() {
 }
 
 //base_dovetail();
-print();
+//print();
 //xray();
 //base_block(extra_y=0);
+
+print();
