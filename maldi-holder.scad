@@ -1,11 +1,11 @@
 epsilon=0.05;
 
 clearance=0.3;
-plate_height=127;
-plate_width=85;
-plate_width_inner=77.6;
+plate_height=125.02     + 2*clearance;
+plate_width=83.07       + 2*clearance;
+plate_width_inner=77.02 + 2*clearance;
 plate_thick=2;
-plate_edge_thick=1.5;
+plate_edge_thick=1 + clearance;
 
 finger_thick=20;
 case_extra_height=5;
@@ -78,6 +78,7 @@ module base_case() {
     }
 }
 
+// Everything with the middle part cut out.
 module case_rim(extra=epsilon) {
     difference() {
 	base_dovetail();
@@ -92,11 +93,11 @@ module case() {
 	translate([0,0,case_thick+epsilon]) rotate([0,180,0]) plate();
 	union() {
 	    translate([0,0,epsilon]) intersection () {
-		case_rim();
+		case_rim(extra=3);
 		translate([plate_width/2,0,case_thick + 5]) scale([1,1.5,1]) sphere(r=finger_thick/2, $fn=120);
 	    }
 	    translate([0,0,epsilon]) intersection () {
-		case_rim();
+		case_rim(extra=3);
 		translate([-plate_width/2,0,case_thick + 5]) scale([1,1.5,1]) sphere(r=finger_thick/2, $fn=120);
 	    }
 	}
