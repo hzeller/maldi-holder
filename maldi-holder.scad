@@ -7,21 +7,25 @@ plate_width_inner=77.2;
 plate_thick=2;
 plate_edge_thick=1;
 
+finger_thick=20;
+case_extra_height=5;
+case_extra_width=finger_thick;
+
 wall_thick=0.8;
-space_under_plate=1;
+space_under_plate=3;
 
 case_thick=wall_thick + space_under_plate + plate_thick;
-case_extra_width=20;
 case_width = plate_width + case_extra_width;
 
-cover_extra=clearance + 3;
+cover_extra_wide=clearance + 4.5;
 cover_extra_thick=clearance + wall_thick;
 
-finger_thick=20;
 
 module magnet() {
     color("gray") cube([0.9 + clearance, 6.4 + clearance, 3.3 + clearance],center=true);
-    color("blue") translate([0,0,(3+2)/2]) cube([0.9 + clearance, 6.4 + clearance, 2],center=true);
+
+    // Additional stuff to cut a pathway to the outside
+    color("blue") translate([0,0,(3+5)/2]) cube([0.9 + clearance, 6.4 + clearance, 5],center=true);
 }
 
 module plate() {
@@ -32,21 +36,33 @@ module plate() {
 }
 
 module base_block() {
+    //translate([0,0,case_thick/2]) cube([plate_width + case_extra_width, plate_height + case_extra_height, case_thick/1], center=true);
+
+    hull() {
+	translate([-(plate_width + case_extra_width)/2,(plate_height+case_extra_height)/2,0]) cube([plate_width + case_extra_width, epsilon, case_thick]);
+	color("red") translate([plate_width/2, -(plate_height-case_extra_width+case_extra_height)/2, 0]) cylinder(r=case_extra_width/2, h=case_thick, $fn=60);
+	translate([-plate_width/2, -(plate_height-case_extra_width+case_extra_height)/2, 0]) cylinder(r=case_extra_width/2, h=case_thick, $fn=60);
+    }
+}
+
+// Base block with the dovetail cut.
+module base_dovetail() {
     difference() {
-	translate([0,0,case_thick/2]) cube([plate_width + case_extra_width, plate_height + case_extra_width, case_thick], center=true);
+	base_block();
+
+	// substract some wedges.
+	translate([(plate_width + case_extra_width + 7)/2, 0, 0]) rotate([0,25,0])  cube([10, plate_height + case_extra_height+ 5, 20], center=true);
 	
-	translate([(plate_width + case_extra_width + 5)/2, 0, 0]) rotate([0,25,0])  cube([10, plate_height+ case_extra_width+ 5, 20], center=true);
-	
-	translate([-(plate_width + case_extra_width + 5)/2, 0, 0]) rotate([0,-25,0])  cube([10, plate_height+ case_extra_width+ 5, 20], center=true);
+	translate([-(plate_width + case_extra_width + 7)/2, 0, 0]) rotate([0,-25,0])  cube([10, plate_height+ case_extra_height+ 5, 20], center=true);
 
     }
 }
 
 module block_with_magnets() {
     difference() {
-	base_block();
-	translate([(plate_width + case_extra_width -7)/2, 20, case_thick-2]) rotate([0,25,0]) rotate([0,180,0])  magnet();
-	translate([-(plate_width + case_extra_width -7)/2, 20, case_thick-2]) rotate([0,-25,0]) rotate([0,180,0]) magnet();
+	base_dovetail();
+	translate([(plate_width + case_extra_width - 4)/2, 20, case_thick-2.5]) rotate([0,25,0]) rotate([0,180,0])  magnet();
+	translate([-(plate_width + case_extra_width - 4)/2, 20, case_thick-2.5]) rotate([0,-25,0]) rotate([0,180,0]) magnet();
     }
 }
 
@@ -59,7 +75,7 @@ module base_case() {
 
 module case_rim(extra=epsilon) {
     difference() {
-	base_block();
+	base_dovetail();
 	cube([plate_width-extra, plate_height, 20], center=true);
     }
 }
@@ -72,11 +88,11 @@ module case() {
 	union() {
 	    translate([0,0,epsilon]) intersection () {
 		case_rim();
-		translate([plate_width/2,0,case_thick + 6.8]) sphere(r=finger_thick/2, $fn=120);
+		translate([plate_width/2,0,case_thick + 5]) scale([1,1.5,1]) sphere(r=finger_thick/2, $fn=120);
 	    }
 	    translate([0,0,epsilon]) intersection () {
 		case_rim();
-		translate([-plate_width/2,0,case_thick + 6.8]) sphere(r=finger_thick/2, $fn=120);
+		translate([-plate_width/2,0,case_thick + 5]) scale([1,1.5,1]) sphere(r=finger_thick/2, $fn=120);
 	    }
 	}
     }
@@ -84,15 +100,15 @@ module case() {
 
 module cover() {
     difference() {
-	translate([0,-cover_extra_thick/2-epsilon,(case_thick + cover_extra_thick)/2]) cube([plate_width + case_extra_width + cover_extra, plate_height + case_extra_width + cover_extra_thick, case_thick + cover_extra_thick], center=true);
+	translate([0,-cover_extra_thick/2-epsilon,(case_thick + cover_extra_thick)/2]) cube([plate_width + case_extra_width + cover_extra_wide, plate_height + case_extra_height + cover_extra_thick, case_thick + cover_extra_thick], center=true);
 	
 	minkowski() {
-	    base_block();
+	    base_dovetail();
 	    sphere(r=clearance);
 	}
 	
-	translate([(plate_width + case_extra_width -1)/2, 20, case_thick-2]) rotate([0,25,0])  rotate([0,180,0]) magnet();
-	translate([-(plate_width + case_extra_width -1)/2, 20, case_thick-2]) rotate([0,-25,0]) rotate([0,180,0]) magnet();
+	translate([(plate_width + case_extra_width+1.5)/2, 20, case_thick-3.5]) rotate([0,25,0])  rotate([0,180,0]) magnet();
+	translate([-(plate_width + case_extra_width+1.5)/2, 20, case_thick-3.5]) rotate([0,-25,0]) rotate([0,180,0]) magnet();
     }
 }
 
@@ -114,9 +130,11 @@ module xray() {
 	}
 	
 	translate([0,20,-20]) cube([100,100,100]);
+	translate([-100,0,-20]) cube([100,100,100]);
     }
 }
 
+//base_dovetail();
 print();
 //xray();
 
