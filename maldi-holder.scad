@@ -57,7 +57,7 @@ module base_dovetail() {
 
 	    }
 	    
-	    translate([-100,(plate_height+case_extra_height+finger_thick-epsilon)/2,case_thick/2]) rotate([0,90,0]) cylinder(r=finger_thick/2,h=200,$fn=60);
+	    translate([-100,(plate_height+case_extra_height+finger_thick-1)/2,case_thick/2]) rotate([0,90,0]) cylinder(r=finger_thick/2,h=200,$fn=60);
 	}
 	translate([0,-cover_extra_thick/2-epsilon,0]) base_block(extra_y=cover_extra_thick+15,extra_x=cover_extra_wide,extra_z=cover_extra_thick);
     }
