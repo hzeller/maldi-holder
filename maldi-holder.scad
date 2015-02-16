@@ -35,13 +35,11 @@ module plate() {
     }
 }
 
-module base_block() {
-    //translate([0,0,case_thick/2]) cube([plate_width + case_extra_width, plate_height + case_extra_height, case_thick/1], center=true);
-
+module base_block(extra_x=0,extra_y=0,extra_z=0) {
     hull() {
-	translate([-(plate_width + case_extra_width)/2,(plate_height+case_extra_height)/2,0]) cube([plate_width + case_extra_width, epsilon, case_thick]);
-	color("red") translate([plate_width/2, -(plate_height-case_extra_width+case_extra_height)/2, 0]) cylinder(r=case_extra_width/2, h=case_thick, $fn=60);
-	translate([-plate_width/2, -(plate_height-case_extra_width+case_extra_height)/2, 0]) cylinder(r=case_extra_width/2, h=case_thick, $fn=60);
+	translate([-(plate_width + case_extra_width + extra_x)/2,(plate_height+case_extra_height + extra_y)/2,0]) cube([plate_width + case_extra_width + extra_x, epsilon, case_thick+extra_z]);
+	color("red") translate([(plate_width+extra_x)/2, -(plate_height-case_extra_width+case_extra_height+extra_y)/2, 0]) cylinder(r=case_extra_width/2, h=case_thick+extra_z, $fn=60);
+	translate([-(plate_width+extra_x)/2, -(plate_height-case_extra_width+case_extra_height+extra_y)/2, 0]) cylinder(r=case_extra_width/2, h=case_thick+extra_z, $fn=60);
     }
 }
 
@@ -100,7 +98,8 @@ module case() {
 
 module cover() {
     difference() {
-	translate([0,-cover_extra_thick/2-epsilon,(case_thick + cover_extra_thick)/2]) cube([plate_width + case_extra_width + cover_extra_wide, plate_height + case_extra_height + cover_extra_thick, case_thick + cover_extra_thick], center=true);
+	//translate([0,-cover_extra_thick/2-epsilon,(case_thick + cover_extra_thick)/2]) cube([plate_width + case_extra_width + cover_extra_wide, plate_height + case_extra_height + cover_extra_thick, case_thick + cover_extra_thick], center=true);
+	translate([0,-cover_extra_thick/2-epsilon,0]) base_block(extra_y=cover_extra_thick,extra_x=cover_extra_wide,extra_z=cover_extra_thick);
 	
 	minkowski() {
 	    base_dovetail();
@@ -137,4 +136,4 @@ module xray() {
 //base_dovetail();
 print();
 //xray();
-
+//base_block(extra_y=0);
