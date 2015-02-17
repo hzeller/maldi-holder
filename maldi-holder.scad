@@ -113,7 +113,6 @@ module outer_cover() {
 
 module cover() {
     difference() {
-	//translate([0,-cover_extra_thick/2-epsilon,(case_thick + cover_extra_thick)/2]) cube([plate_width + case_extra_width + cover_extra_wide, plate_height + case_extra_height + cover_extra_thick, case_thick + cover_extra_thick], center=true);
 	outer_cover();
 	
 	minkowski() {
@@ -128,7 +127,7 @@ module cover() {
 
 module print() {
     case();
-    translate([case_width + 5, 0, case_thick + cover_extra_thick ]) rotate([0,180,0]) cover();
+    translate([case_width + cover_extra_wide + 4, 0, case_thick + cover_extra_thick ]) rotate([0,180,0]) cover();
 }
 
 //magnet();
