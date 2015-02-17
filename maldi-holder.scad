@@ -1,31 +1,34 @@
 epsilon=0.05;
+clearance=0.25;  // clearance between moving parts.
 
-clearance=0.3;
 plate_height=125.02     + 2*clearance;
 plate_width=83.07       + 2*clearance;
 plate_width_inner=77.02 + 2*clearance;
 plate_thick=2;
 plate_edge_thick=1 + clearance;
 
-finger_thick=20;
+finger_thick=20;  // approximation of a thumb :)
 case_extra_height=5;
 case_extra_width=finger_thick;
 
-wall_thick=0.8;
-space_under_plate=3;
+wall_thick=1;
+space_under_plate=4;
 
 case_thick=wall_thick + space_under_plate + plate_thick;
 case_width = plate_width + case_extra_width;
 
-cover_extra_wide=clearance + 4.5;
+cover_extra_wide=clearance + 8;  // Wider to accomodate dovetail and magnet.
 cover_extra_thick=clearance + wall_thick;
 
+magnet_thick= 1.5 + clearance;
+magnet_long = 8   + clearance;
+magnet_wide = 6   + clearance;
 
-module magnet() {
-    color("gray") cube([0.9 + clearance, 6.4 + clearance, 3.3 + clearance],center=true);
-
-    // Additional stuff to cut a pathway to the outside
-    color("blue") translate([0,0,(3+5)/2]) cube([0.9 + clearance, 6.4 + clearance, 5],center=true);
+// Magnet. Upright, with some extra additional space poking out the bottom,
+// a pathway to slide it in.
+module magnet(extra=5) {
+    color("gray") #translate([0,0,magnet_wide/2]) cube([magnet_thick, magnet_long, magnet_wide], center=true);
+    color("blue") translate([0,0,-extra/2+epsilon]) cube([magnet_thick, magnet_long, extra], center=true);
 }
 
 module plate() {
@@ -66,8 +69,8 @@ module base_dovetail() {
 module block_with_magnets() {
     difference() {
 	base_dovetail();
-	translate([(plate_width + case_extra_width - 4)/2, 20, case_thick-2.5]) rotate([0,25,0]) rotate([0,180,0])  magnet();
-	translate([-(plate_width + case_extra_width - 4)/2, 20, case_thick-2.5]) rotate([0,-25,0]) rotate([0,180,0]) magnet();
+	translate([(plate_width + case_extra_width - 8)/2, 20, 0]) rotate([0,25,0]) translate([0,0,0.8]) magnet();
+	translate([-(plate_width + case_extra_width - 8)/2, 20, 0]) rotate([0,-25,0]) translate([0,0,0.8]) magnet();
     }
 }
 
@@ -118,8 +121,8 @@ module cover() {
 	    sphere(r=clearance);
 	}
 	
-	translate([(plate_width + case_extra_width+1.5)/2, 20, case_thick-3.5]) rotate([0,25,0])  rotate([0,180,0]) magnet();
-	translate([-(plate_width + case_extra_width+1.5)/2, 20, case_thick-3.5]) rotate([0,-25,0]) rotate([0,180,0]) magnet();
+	translate([(plate_width + case_extra_width)/2, 20, 0]) rotate([0,25,0]) translate([0,0,0.8]) magnet();
+	translate([-(plate_width + case_extra_width)/2, 20, 0]) rotate([0,-25,0]) translate([0,0,0.8]) magnet();
     }
 }
 
