@@ -12,7 +12,7 @@ plate_thick=2;
 plate_edge_thick=1 + clearance;
 
 finger_thick=20;  // approximation of a thumb :)
-case_extra_height_front=3;
+case_extra_height_front=4;
 case_extra_height_back=4;
 case_extra_width=finger_thick;
 
@@ -129,6 +129,9 @@ module case() {
 		translate([-plate_width/2,0,case_thick + 5]) scale([1,1.5,1]) sphere(r=finger_thick/2, $fn=120);
 	    }
 	}
+
+	// Emboss to not be in the way while stacking.
+	translate([5,plate_height/2+case_extra_height_front + 4.6,0]) linear_extrude(height=2*text_thick) rotate([0,180,180]) text("ksm · hz · 2015", size=5, font="Arial:style=Bold");
     }
 
     // Instructions
@@ -140,9 +143,6 @@ module case() {
 	    }
 	}
     }
-
-    // whois
-    translate([-20,plate_height/2+case_extra_height_front + 4.2,case_thick + wall_thick]) color("gray") linear_extrude(height=clearance+text_thick) rotate([0,0,180]) text("ksm | hz | 2015", size=3.5);
 }
 
 module outer_cover() {
