@@ -32,7 +32,7 @@ side_magnets = false;
 back_magnets = true;
 magnet_separator=0.4;
 
-text_thick=0.25;
+text_thick=0.4;
 
 // Magnet. Upright, with some extra additional space poking out the bottom,
 // a pathway to slide it in.
@@ -131,7 +131,7 @@ module case() {
 	}
 
 	// Emboss to not be in the way while stacking.
-	translate([5,plate_height/2+case_extra_height_front + 4.6,0]) linear_extrude(height=2*text_thick) rotate([0,180,180]) text("ksm · hz · 2015", size=5, font="Arial:style=Bold");
+	translate([5,plate_height/2+case_extra_height_front + 4.6,0]) linear_extrude(height=text_thick) rotate([0,180,180]) text("ksm · hz · 2015", size=5, font="Arial:style=Bold");
     }
 
     // Instructions
